@@ -1,4 +1,3 @@
-# src/api/promo_codes.py
 from fastapi import APIRouter, Depends, Query, Body
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -21,7 +20,6 @@ def list_promo_codes(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("SELLER", "ADMIN"))
 ):
-    """Список промокодов"""
     query = db.query(PromoCode)
     
     if active is not None:
@@ -58,7 +56,6 @@ def get_promo_code(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("SELLER", "ADMIN"))
 ):
-    """Получение промокода по ID"""
     promo = db.query(PromoCode).filter(PromoCode.id == promo_id).first()
     if not promo:
         raise create_error("PROMO_CODE_INVALID")
@@ -79,14 +76,11 @@ def get_promo_code(
 
 @router.post("", status_code=201, response_model=PromoCodeResponse)
 def create_promo_code(
-    promo_: PromoCodeCreate = Body(...),  # ← ✅ ИСПРАВЛЕНО: promo_: PromoCodeCreate
+    promo_: PromoCodeCreate = Body(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("SELLER", "ADMIN"))
 ):
-    """Создание промокода"""
-    
-    # ← ✅ ИСПОЛЬЗУЙТЕ promo_, а не promo_data!
-    code = promo_.code.strip()              # ← promo_.code
+    code = promo_.code.strip()
     
     if not re.match(r'^[A-Z0-9_]{4,20}$', code):
         raise create_error(
@@ -106,14 +100,14 @@ def create_promo_code(
     
     new_promo = PromoCode(
         code=code,
-        discount_type=promo_.discount_type,      # ← promo_.discount_type
-        discount_value=promo_.discount_value,    # ← promo_.discount_value
-        min_order_amount=promo_.min_order_amount, # ← promo_.min_order_amount
-        max_uses=promo_.max_uses,                # ← promo_.max_uses
+        discount_type=promo_.discount_type,
+        discount_value=promo_.discount_value,
+        min_order_amount=promo_.min_order_amount,
+        max_uses=promo_.max_uses,
         current_uses=0,
-        valid_from=promo_.valid_from,            # ← promo_.valid_from
-        valid_until=promo_.valid_until,          # ← promo_.valid_until
-        active=promo_.active                     # ← promo_.active
+        valid_from=promo_.valid_from,
+        valid_until=promo_.valid_until,
+        active=promo_.active
     )
     
     db.add(new_promo)
@@ -137,18 +131,16 @@ def create_promo_code(
 @router.put("/{promo_id}", response_model=PromoCodeResponse)
 def update_promo_code(
     promo_id: str,
-    promo_: PromoCodeUpdate = Body(...),  # ← ✅ ИСПРАВЛЕНО: promo_: PromoCodeUpdate
+    promo_: PromoCodeUpdate = Body(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("SELLER", "ADMIN"))
 ):
-    """Обновление промокода"""
     
     promo = db.query(PromoCode).filter(PromoCode.id == promo_id).first()
     if not promo:
         raise create_error("PROMO_CODE_INVALID")
     
-    # ← ✅ ИСПОЛЬЗУЙТЕ promo_, а не promo_data!
-    update_data = promo_.dict(exclude_unset=True)  # ← promo_.dict()
+    update_data = promo_.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(promo, field, value)
     
@@ -175,7 +167,6 @@ def delete_promo_code(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("ADMIN"))
 ):
-    """Удаление промокода"""
     
     promo = db.query(PromoCode).filter(PromoCode.id == promo_id).first()
     if not promo:
