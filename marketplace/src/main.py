@@ -1,4 +1,3 @@
-# src/main.py
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -55,16 +54,14 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-# Роутеры
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(products.router, prefix="/api/v1")
 app.include_router(orders.router, prefix="/api/v1")
-app.include_router(promo_codes.router, prefix="/api/v1")  # ← Добавлено
+app.include_router(promo_codes.router, prefix="/api/v1")
 
 
 @app.get("/health", response_model=HealthResponse, tags=["System"])
 def health_check():
-    """Проверка работоспособности API"""
     return {"status": "ok", "version": "1.0.0"}
 
 
@@ -82,5 +79,4 @@ def register_schemas(
     promo_code_update: PromoCodeUpdate = None,
     error_response: ErrorResponse = None,
 ):
-    """Этот endpoint нужен только для регистрации схем в Swagger"""
     pass
