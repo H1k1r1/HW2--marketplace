@@ -1,4 +1,3 @@
-# src/services/order_service.py
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
@@ -105,26 +104,19 @@ class OrderService:
         self.db.add(op)
 
     def create_order(self, items_data, promo_code_str=None):
-        # 1. Сначала проверка активных заказов (быстрая)
         self._check_active_orders()
         
-        # 2. Проверка товаров и остатков (без блокировки)
         products = self._validate_and_lock_products(items_data)
         
-        # 3. Расчет стоимости
         total = self._calculate_total(items_data, products)
         
-        # 4. Применение промокода
         final_total, discount, promo = self._apply_promo(total, promo_code_str)
         
-        # 5. ТОЛЬКО ТЕПЕРЬ rate limit (перед фиксацией!)
         self._check_rate_limit("CREATE_ORDER")
         
-        # 6. Резервирование остатков (в транзакции)
         for i, item in enumerate(items_data):
             products[i].stock -= item['quantity']
         
-        # 7. Создание заказа
         order = Order(
             user_id=self.user.id,
             status=OrderStatusEnum.CREATED,
@@ -135,7 +127,6 @@ class OrderService:
         self.db.add(order)
         self.db.flush()
         
-        # 8. Позиции заказа
         for i, item in enumerate(items_data):
             order_item = OrderItem(
                 order_id=order.id,
@@ -145,7 +136,6 @@ class OrderService:
             )
             self.db.add(order_item)
         
-        # 9. Лог операции
         self._log_operation("CREATE_ORDER")
         
         self.db.commit()
