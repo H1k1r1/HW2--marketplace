@@ -1,4 +1,3 @@
-# src/services/auth_service.py
 from sqlalchemy.orm import Session
 
 from src.models import User, UserRoleEnum
