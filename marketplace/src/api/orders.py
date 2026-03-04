@@ -1,4 +1,3 @@
-# src/api/orders.py
 from fastapi import APIRouter, Depends, Query, Body
 from sqlalchemy.orm import Session
 
@@ -20,7 +19,6 @@ def list_orders(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Список заказов с пагинацией"""
     
     query = db.query(Order)
     
@@ -65,19 +63,18 @@ def list_orders(
 
 @router.post("", status_code=201, response_model=OrderResponse)
 def create_order(
-    order_: OrderCreate = Body(...),  # ← ✅ ИСПРАВЛЕНО: order_: OrderCreate
+    order_: OrderCreate = Body(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("USER", "ADMIN"))
 ):
-    """Создание заказа"""
     
     if current_user.role.value == "SELLER":
         raise create_error("ACCESS_DENIED")
     
     service = OrderService(db, current_user)
     order = service.create_order(
-        items_data=[item.dict() for item in order_.items],  # ← ✅ order_.items
-        promo_code_str=order_.promo_code                      # ← ✅ order_.promo_code
+        items_data=[item.dict() for item in order_.items],
+        promo_code_str=order_.promo_code
     )
     
     return {
@@ -105,7 +102,6 @@ def get_order(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Получение заказа по ID"""
     
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
@@ -138,11 +134,10 @@ def get_order(
 @router.put("/{order_id}", response_model=OrderResponse)
 def update_order(
     order_id: str,
-    order_: OrderCreate = Body(...),  # ← ✅ ИСПРАВЛЕНО: order_: OrderCreate
+    order_: OrderCreate = Body(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Обновление заказа"""
     
     if current_user.role.value == "SELLER":
         raise create_error("ACCESS_DENIED")
@@ -150,7 +145,7 @@ def update_order(
     service = OrderService(db, current_user)
     order = service.update_order(
         order_id=order_id,
-        items_data=[item.dict() for item in order_.items]  # ← ✅ order_.items
+        items_data=[item.dict() for item in order_.items]
     )
     
     return {
@@ -178,7 +173,6 @@ def cancel_order(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Отмена заказа"""
     
     if current_user.role.value == "SELLER":
         raise create_error("ACCESS_DENIED")
