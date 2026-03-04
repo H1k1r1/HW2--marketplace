@@ -1,4 +1,3 @@
-# src/core/exceptions.py
 from fastapi import HTTPException
 
 ERROR_CODES = {
