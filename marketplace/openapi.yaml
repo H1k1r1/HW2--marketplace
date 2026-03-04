@@ -15,7 +15,6 @@ components:
       bearerFormat: JWT
 
   schemas:
-    # --- Errors ---
     Error:
       type: object
       properties:
@@ -23,7 +22,6 @@ components:
         message: { type: string }
         details: { type: object, nullable: true }
 
-    # --- Product ---
     ProductStatus:
       type: string
       enum: [ACTIVE, INACTIVE, ARCHIVED]
@@ -71,7 +69,6 @@ components:
         page: { type: integer }
         size: { type: integer }
 
-    # --- Orders ---
     OrderStatus:
       type: string
       enum: [CREATED, PAYMENT_PENDING, PAID, SHIPPED, COMPLETED, CANCELED]
@@ -108,7 +105,6 @@ components:
         quantity: { type: integer }
         price_at_order: { type: number, format: decimal }
 
-    # --- Auth ---
     RegisterRequest:
       type: object
       required: [email, password, role]
@@ -236,4 +232,5 @@ paths:
       requestBody:
         content: { application/json: { schema: { $ref: '#/components/schemas/LoginRequest' } } }
       responses:
+
         200: { content: { application/json: { schema: { $ref: '#/components/schemas/TokenResponse' } } } }
