@@ -1,4 +1,3 @@
-# src/models.py
 from sqlalchemy import (
     Column, String, Integer, Numeric, DateTime, 
     ForeignKey, Enum, Boolean, CheckConstraint, func
@@ -10,9 +9,6 @@ import enum
 
 Base = declarative_base()
 
-# ============================================
-# ENUM определения (ДО моделей!)
-# ============================================
 
 class ProductStatusEnum(str, enum.Enum):
     ACTIVE = "ACTIVE"
@@ -45,9 +41,6 @@ class OperationTypeEnum(str, enum.Enum):
     UPDATE_ORDER = "UPDATE_ORDER"
 
 
-# ============================================
-# SQLAlchemy модели
-# ============================================
 
 class User(Base):
     __tablename__ = "users"
@@ -134,8 +127,5 @@ class UserOperation(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
     __table_args__ = (
-        # Индекс для быстрого поиска операций пользователя
-        # (нужен для rate-limit проверки)
-        # Создаётся в миграции, здесь можно указать для ORM
         None,
     )
