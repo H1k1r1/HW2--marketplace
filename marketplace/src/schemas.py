@@ -1,4 +1,3 @@
-# src/schemas.py
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Union
 from datetime import datetime
@@ -6,7 +5,6 @@ from enum import Enum
 import re
 
 
-# === Enums ===
 class ProductStatus(str, Enum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
@@ -33,7 +31,6 @@ class PromoDiscountType(str, Enum):
     FIXED_AMOUNT = "FIXED_AMOUNT"
 
 
-# === Product Schemas ===
 class ProductCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = Field(None, max_length=4000)
@@ -75,7 +72,6 @@ class ProductListResponse(BaseModel):
     size: int
 
 
-# === Order Schemas ===
 class OrderItemInput(BaseModel):
     product_id: str
     quantity: int = Field(..., ge=1, le=999)
@@ -125,7 +121,6 @@ class OrderListResponse(BaseModel):
     size: int
 
 
-# === PromoCode Schemas ===
 class PromoCodeCreate(BaseModel):
     code: str = Field(..., min_length=4, max_length=20)
     discount_type: PromoDiscountType
@@ -162,7 +157,6 @@ class PromoCodeResponse(BaseModel):
         from_attributes = True
 
 
-# === Auth Schemas ===
 class RegisterRequest(BaseModel):
     email: str = Field(..., pattern=r'^[^@]+@[^@]+\.[^@]+$')
     password: str = Field(..., min_length=8)
@@ -184,7 +178,6 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 
-# === Error Schemas ===
 class ErrorDetail(BaseModel):
     field: str
     message: str
@@ -202,7 +195,6 @@ class ErrorResponse(BaseModel):
     details: Optional[dict] = None
 
 
-# === Health Check Schema ===
 class HealthResponse(BaseModel):
     status: str
     version: str
