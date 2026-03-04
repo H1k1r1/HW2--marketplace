@@ -1,4 +1,3 @@
-# src/api/products.py
 from fastapi import APIRouter, Depends, Query, Body
 from sqlalchemy.orm import Session
 from datetime import datetime
